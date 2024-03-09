@@ -21,11 +21,19 @@ pub mod anchor_counter {
         msg!("Counter incremented. Current count {}", counter.count);
         Ok(())
     }
+
+    pub fn decrement(ctx: Context<Update>) -> Result<()> {
+        let counter = &mut ctx.accounts.counter;
+        msg!("Previous counter: {}", counter.count);
+        counter.count = counter.count.checked_sub(1).unwrap();
+        msg!("Counter decremented. Current count {}", counter.count);
+        Ok(())
+    }
 }
 
 #[derive(Accounts)]
 pub struct Initialize<'info> {
-    #[account(init, payer= user, space = 8 + 8)]
+    #[account(init, payer = user, space = 8 + 8)]
     pub counter: Account<'info, Counter>,
     #[account(mut)]
     pub user: Signer<'info>,
