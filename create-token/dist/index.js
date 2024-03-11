@@ -18,6 +18,13 @@ function createNewMint(connection, payer, mintAuthority, freezeAuthority, decima
         return tokenMint;
     });
 }
+function createTokenAccount(connection, payer, mint, owner) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const tokenAccount = yield (0, spl_token_1.getOrCreateAssociatedTokenAccount)(connection, payer, mint, owner);
+        console.log(`Token account: https://explorer.solana.com/address/${tokenAccount.address}?cluster=devnet`);
+        return tokenAccount;
+    });
+}
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         const connection = new web3_js_1.Connection((0, web3_js_1.clusterApiUrl)('devnet'));
@@ -29,10 +36,7 @@ function main() {
         ]);
         const keypair = web3_js_1.Keypair.fromSecretKey(secret);
         const mint = yield createNewMint(connection, keypair, keypair.publicKey, keypair.publicKey, 2);
-        console.log(keypair.publicKey.toBase58());
-        console.log(keypair.secretKey);
-        const mintInfo = yield (0, spl_token_1.getMint)(connection, mint);
-        console.log(mintInfo);
+        const tokenAccount = yield createTokenAccount(connection, keypair, mint, keypair.publicKey);
     });
 }
 main();

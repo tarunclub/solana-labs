@@ -1,4 +1,8 @@
-import { createMint, getMint } from '@solana/spl-token';
+import {
+  createMint,
+  getMint,
+  getOrCreateAssociatedTokenAccount,
+} from '@solana/spl-token';
 import { Connection, Keypair, PublicKey, clusterApiUrl } from '@solana/web3.js';
 
 async function createNewMint(
@@ -23,6 +27,26 @@ async function createNewMint(
   return tokenMint;
 }
 
+async function createTokenAccount(
+  connection: Connection,
+  payer: Keypair,
+  mint: PublicKey,
+  owner: PublicKey
+) {
+  const tokenAccount = await getOrCreateAssociatedTokenAccount(
+    connection,
+    payer,
+    mint,
+    owner
+  );
+
+  console.log(
+    `Token account: https://explorer.solana.com/address/${tokenAccount.address}?cluster=devnet`
+  );
+
+  return tokenAccount;
+}
+
 async function main() {
   const connection = new Connection(clusterApiUrl('devnet'));
 
@@ -41,8 +65,13 @@ async function main() {
     keypair.publicKey,
     2
   );
-  console.log(keypair.publicKey.toBase58());
-  console.log(keypair.secretKey);
+
+  const tokenAccount = await createTokenAccount(
+    connection,
+    keypair,
+    mint,
+    keypair.publicKey
+  );
 }
 
 main();
