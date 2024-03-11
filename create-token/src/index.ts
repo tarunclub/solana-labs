@@ -3,6 +3,7 @@ import {
   getMint,
   getOrCreateAssociatedTokenAccount,
   mintTo,
+  transfer,
 } from '@solana/spl-token';
 import { Connection, Keypair, PublicKey, clusterApiUrl } from '@solana/web3.js';
 
@@ -67,6 +68,28 @@ async function mintToken(
 
   console.log(
     `Mint Token Transaction: https://explorer.solana.com/tx/${transactionSignature}?clsuter=devnet`
+  );
+}
+
+async function transferTokens(
+  connection: Connection,
+  payer: Keypair,
+  source: PublicKey,
+  destination: PublicKey,
+  owner: Keypair,
+  amount: number
+) {
+  const transactionSignature = await transfer(
+    connection,
+    payer,
+    source,
+    destination,
+    owner,
+    amount
+  );
+
+  console.log(
+    `Transfer Transaction: https://explorer.solana.com/tx/${transactionSignature}?cluster=devnet`
   );
 }
 
