@@ -25,9 +25,15 @@ function createTokenAccount(connection, payer, mint, owner) {
         return tokenAccount;
     });
 }
+function mintToken(connection, payer, mint, destination, authority, amount) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const transactionSignature = yield (0, spl_token_1.mintTo)(connection, payer, mint, destination, authority, amount);
+        console.log(`Mint Token Transaction: https://explorer.solana.com/tx/${transactionSignature}?clsuter=devnet`);
+    });
+}
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        const connection = new web3_js_1.Connection((0, web3_js_1.clusterApiUrl)('devnet'));
+        const connection = new web3_js_1.Connection((0, web3_js_1.clusterApiUrl)('devnet'), 'confirmed');
         const secret = Uint8Array.from([
             221, 238, 125, 115, 182, 138, 144, 194, 103, 74, 93, 88, 231, 243, 169, 201,
             228, 253, 68, 20, 238, 242, 180, 215, 90, 59, 246, 71, 10, 251, 235, 87,
@@ -35,8 +41,10 @@ function main() {
             39, 120, 125, 75, 229, 44, 159, 155, 202, 30, 231, 68, 199, 72, 68, 250,
         ]);
         const keypair = web3_js_1.Keypair.fromSecretKey(secret);
-        const mint = yield createNewMint(connection, keypair, keypair.publicKey, keypair.publicKey, 2);
+        const mint = yield createNewMint(connection, keypair, keypair.publicKey, keypair.publicKey, 9);
         const tokenAccount = yield createTokenAccount(connection, keypair, mint, keypair.publicKey);
+        console.log(tokenAccount.address.toBase58());
+        yield mintToken(connection, keypair, mint, tokenAccount.address, keypair, 100 * 10 ** 9);
     });
 }
 main();
